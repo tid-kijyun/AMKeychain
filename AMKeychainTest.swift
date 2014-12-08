@@ -26,6 +26,7 @@ import XCTest
 
 class keychainTestTests: XCTestCase {
     let SERVICE_NAME = "MyService"
+    let account = "oreore"
     
     override func setUp() {
         super.setUp()
@@ -40,10 +41,9 @@ class keychainTestTests: XCTestCase {
     func testAMKeychain() {
         var result = false
         var pass : String?  = ""
-        let account = "oreore"
         let pass1  = "testpass1"
         let pass2  = "testpass2"
-
+        
         // set(add)
         result = AMKeychain.setPassword(SERVICE_NAME, account: account, password: pass1) {
             (error) in
@@ -80,6 +80,51 @@ class keychainTestTests: XCTestCase {
             println(error)
         }
         XCTAssert(accounts?[0] == account, "Pass")
+        
+        // delete
+        result = AMKeychain.deletePassword(SERVICE_NAME, account: account) {
+            (error) in
+            println(error)
+        }
+        XCTAssert(result, "Pass")
+    }
+    
+    func testPasswordData() {
+        // setPasswordData
+        let NAME = "username"
+        let PASS = "mypassword"
+        let TOKEN = "mytoken"
+        
+        var result = false
+        
+        let dict : NSDictionary = ["name":NAME, "pass":PASS, "token":TOKEN]
+        let data = NSKeyedArchiver.archivedDataWithRootObject(dict)
+        result = AMKeychain.setPasswordData(SERVICE_NAME, account: account, data: data) {
+            (error) in
+            println(error)
+        }
+        XCTAssert(result, "Pass")
+        
+        // getPasswordData
+        let myData = AMKeychain.getPasswordData(SERVICE_NAME, account: account) {
+            (error) in
+            println(error)
+        }
+        XCTAssertNotNil(myData, "Pass")
+        if let myDict = NSKeyedUnarchiver.unarchiveObjectWithData(myData!) as? NSDictionary {
+            switch (myDict["name"], myDict["pass"], myDict["token"]) {
+            case (let name as String, let pass as String, let token as String):
+                XCTAssert(name == NAME, "Pass")
+                XCTAssert(pass == PASS, "Pass")
+                XCTAssert(token == TOKEN, "Pass")
+                break
+            default:
+                XCTAssert(false, "")
+                break
+            }
+        } else {
+            XCTAssert(false, "")
+        }
         
         // delete
         result = AMKeychain.deletePassword(SERVICE_NAME, account: account) {

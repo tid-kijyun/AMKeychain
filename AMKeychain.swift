@@ -83,6 +83,23 @@ public class AMKeychain {
             return nil
         }
     }
+    
+    public class func setPasswordData(serviceName: String, account: String, data: NSData,
+        failure: failureClosure? = nil) -> Bool {
+        var query = Query()
+        query.service  = serviceName
+        query.account  = account
+        query.passwordData = data
+        return query.addOrUpdate(failure: failure)
+    }
+    
+    public class func getPasswordData(serviceName: String, account: String,
+        failure: failureClosure? = nil) -> NSData? {
+        var query = Query()
+        query.service = serviceName
+        query.account = account
+        return query.select(failure: failure)?.passwordData
+    }
 }
 
 extension AMKeychain {
