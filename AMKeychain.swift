@@ -162,7 +162,7 @@ extension AMKeychain {
                 result = QueryResult()
                 result?.passwordData = dataTypeRef?.takeRetainedValue() as? NSData
             }
-
+            
             if let error = getError(status) {
                 failure?(error)
             }
@@ -187,10 +187,7 @@ extension AMKeychain {
                         result.passwordData = data
                         results?.append(result)
                     case let datas as NSArray:
-                        println(datas)
                         for data in datas {
-                            println(data)
-                            println(data["acct"])
                             var result = QueryResult()
                             result.account      = data["acct"] as? String
                             result.accessGroup  = data["agrp"] as? String
@@ -199,7 +196,8 @@ extension AMKeychain {
                             results?.append(result)
                         }
                     default:
-                        results = nil                    }
+                        results = nil
+                    }
                 }
             }
             
@@ -210,8 +208,7 @@ extension AMKeychain {
             
             return results
         }
-        
-        
+
         private func make() -> NSMutableDictionary {
             var query = NSMutableDictionary()
             query.setValue(self.secClass?.rawValue, forKey: kSecClass as String)
@@ -223,28 +220,28 @@ extension AMKeychain {
         private func getError(status: OSStatus) -> NSError? {
             var msg = ""
             switch (status) {
-                case errSecAllocate:
-                    msg = "errSecAllocate"
-                case errSecAuthFailed:
-                    msg = "errSecAuthFailed"
-                case errSecDecode:
-                    msg = "errSecDecode"
-                case errSecDuplicateItem:
-                    msg = "errSecDuplicateItem"
-                case errSecInteractionNotAllowed:
-                    msg = "errSecInteractionNotAllowd"
-                case errSecItemNotFound:
-                    msg = "errSecItemNotFound"
-                case errSecNotAvailable:
-                    msg = "errSecNotAvailable"
-                case errSecParam:
-                    msg = "errSecParam"
-                case errSecUnimplemented:
-                    msg = "errSecUnimplemented"
-                case errSecSuccess:
-                    return nil
-                default:
-                    return nil
+            case errSecAllocate:
+                msg = "errSecAllocate"
+            case errSecAuthFailed:
+                msg = "errSecAuthFailed"
+            case errSecDecode:
+                msg = "errSecDecode"
+            case errSecDuplicateItem:
+                msg = "errSecDuplicateItem"
+            case errSecInteractionNotAllowed:
+                msg = "errSecInteractionNotAllowd"
+            case errSecItemNotFound:
+                msg = "errSecItemNotFound"
+            case errSecNotAvailable:
+                msg = "errSecNotAvailable"
+            case errSecParam:
+                msg = "errSecParam"
+            case errSecUnimplemented:
+                msg = "errSecUnimplemented"
+            case errSecSuccess:
+                return nil
+            default:
+                return nil
             }
             
             return NSError(domain: "", code: Int(status), userInfo: ["msg":msg])
